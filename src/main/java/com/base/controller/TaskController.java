@@ -44,39 +44,43 @@ public class TaskController {
     // STEP 3 - CLAIM TASK
     // =========================================
     @PostMapping("/{taskId}/claim/{userId}")
-    public String claimTask(@PathVariable String taskId,
+    public String safeClaim(@PathVariable String taskId,
                             @PathVariable String userId) {
 
+        Task task = taskService.createTaskQuery()
+                .taskId(taskId)
+                .singleResult();
+
+        if (task == null) return "NOT FOUND";
+
+        if (task.getAssignee() != null) {
+            return "ALREADY CLAIMED BY " + task.getAssignee();
+        }
+
         taskService.claim(taskId, userId);
-
-        return "TASK CLAIMED";
+        return "CLAIMED";
     }
 
-    // =========================================
-    // STEP 4 - COMPLETE TASK
-    // =========================================
     @PostMapping("/{taskId}/complete")
-    public String completeTask(@PathVariable String taskId) {
+    public String completeTask(@PathVariable String taskId,
+                               @RequestBody(required = false) Map<String, Object> body) {
 
-        taskService.complete(taskId);
+        Task task = taskService.createTaskQuery()
+                .taskId(taskId)
+                .singleResult();
 
-        return "TASK COMPLETED";
-    }
+        if (task == null) {
+            throw new RuntimeException("Task not found or already completed: " + taskId);
+        }
 
-    // =========================================
-    // STEP 5 - APPROVE TASK
-    // =========================================
-    @PostMapping("/{taskId}/approve")
-    public String approveTask(@PathVariable String taskId) {
-
-        Map<String, Object> variables = new HashMap<>();
-        variables.put("approved", true);
+        Map<String, Object> variables = (body != null)
+                ? new HashMap<>(body)
+                : new HashMap<>();
 
         taskService.complete(taskId, variables);
 
-        return "TASK APPROVED";
+        return "TASK COMPLETED";
     }
-
     // =========================================
     // STEP 6 - REJECT TASK
     // =========================================
@@ -89,5 +93,23 @@ public class TaskController {
         taskService.complete(taskId, variables);
 
         return "TASK REJECTED";
+    }
+
+    @PostMapping("/{taskId}/completeafter")
+    public String completeTask(@PathVariable String taskId) {
+
+        Task task = taskService.createTaskQuery()
+                .taskId(taskId)
+                .singleResult();
+
+        if (task == null) {
+            return "TASK NOT FOUND";
+        }
+
+        System.out.println("TASK NAME = " + task.getName());
+
+        taskService.complete(taskId);
+
+        return "TASK COMPLETED";
     }
 }

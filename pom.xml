@@ -20,9 +20,22 @@
 		<camunda.version>7.15.0</camunda.version>
 	</properties>
 
+	<!-- ✅ CAMUNDA BOM QUAN TRỌNG -->
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.camunda.bpm</groupId>
+				<artifactId>camunda-bom</artifactId>
+				<version>${camunda.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<dependencies>
 
-		<!-- WEB -->
+		<!-- SPRING WEB -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -34,16 +47,26 @@
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 
-		<!-- CAMUNDA -->
+		<!-- CAMUNDA ENGINE STARTER (QUAN TRỌNG NHẤT) -->
 		<dependency>
 			<groupId>org.camunda.bpm.springboot</groupId>
-			<artifactId>camunda-bpm-spring-boot-starter-webapp</artifactId>
-			<version>${camunda.version}</version>
+			<artifactId>camunda-bpm-spring-boot-starter</artifactId>
 		</dependency>
+
+		<!-- REST API -->
 		<dependency>
 			<groupId>org.camunda.bpm.springboot</groupId>
 			<artifactId>camunda-bpm-spring-boot-starter-rest</artifactId>
-			<version>${camunda.version}</version>
+		</dependency>
+
+		<!-- WEB UI -->
+		<dependency>
+			<groupId>org.camunda.bpm.springboot</groupId>
+			<artifactId>camunda-bpm-spring-boot-starter-webapp</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.camunda.bpm</groupId>
+			<artifactId>camunda-engine-rest-jaxrs2</artifactId>
 		</dependency>
 
 		<!-- POSTGRES -->
@@ -52,7 +75,7 @@
 			<artifactId>postgresql</artifactId>
 		</dependency>
 
-		<!-- JAVA 11 FIX -->
+		<!-- FIX JAVA ANNOTATION -->
 		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>javax.annotation-api</artifactId>
@@ -72,7 +95,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>

@@ -6,17 +6,17 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
 
-@Configuration
+//@Configuration
 public class CamundaDeployConfig {
-    @Autowired
-    private RepositoryService repositoryService;
-
-    @PostConstruct
-    public void deployProcess() {
-
-        repositoryService.createDeployment()
-                .addClasspathResource("processes/document_approval.bpmn")
-                .deploy();
-    }
+//    @Autowired
+//    private RepositoryService repositoryService;
+//
+//    @PostConstruct
+//    public void deployProcess() {
+//
+//        repositoryService.createDeployment()
+//                .addClasspathResource("processes/document_approval.bpmn")
+//                .deploy();
+//    }
 
 }
