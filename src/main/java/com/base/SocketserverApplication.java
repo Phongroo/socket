@@ -5,10 +5,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class BpmnserverApplication implements CommandLineRunner {
+public class SocketserverApplication implements CommandLineRunner {
 
 	public static void main(String[] args) {
-		SpringApplication.run(BpmnserverApplication.class, args);
+		SpringApplication.run(SocketserverApplication.class, args);
 	}
 
 	@Override
