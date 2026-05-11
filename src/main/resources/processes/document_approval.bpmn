@@ -2,8 +2,12 @@
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.34.0">
   <bpmn:process id="document_approval" name="Document Approval" isExecutable="true">
     <bpmn:startEvent id="StartEvent_1" />
-    <bpmn:userTask id="SubmitDocument" camunda:assignee="creator" />
-    <bpmn:userTask id="ManagerApprove" camunda:assignee="manager" />
+    <bpmn:userTask id="SubmitDocument" default="f2" camunda:assignee="creator">
+      <bpmn:extensionElements>
+        <camunda:taskListener delegateExpression="${taskAssignListener}" event="create" />
+      </bpmn:extensionElements>
+    </bpmn:userTask>
+    <bpmn:userTask id="ManagerApprove" default="f3" camunda:assignee="manager" />
     <bpmn:userTask id="DirectorApprove" camunda:assignee="director" />
     <bpmn:exclusiveGateway id="ManagerDecision" />
     <bpmn:exclusiveGateway id="DirectorDecision" />
@@ -13,21 +17,17 @@
     <bpmn:sequenceFlow id="f2" sourceRef="SubmitDocument" targetRef="ManagerApprove" />
     <bpmn:sequenceFlow id="f3" sourceRef="ManagerApprove" targetRef="ManagerDecision" />
     <bpmn:sequenceFlow id="f4" sourceRef="ManagerDecision" targetRef="DirectorApprove">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">                ${managerApproved == 1}            </bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression"> ${managerApproved == 1}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="f5" sourceRef="ManagerDecision" targetRef="RejectedEnd">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">                ${managerApproved == 0}            </bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${managerApproved == 0}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="f6" sourceRef="DirectorApprove" targetRef="DirectorDecision" />
     <bpmn:sequenceFlow id="f7" sourceRef="DirectorDecision" targetRef="ApprovedEnd">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">
-                ${directorApproved == true}
-            </bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${directorApproved == 1}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="f8" sourceRef="DirectorDecision" targetRef="RejectedEnd">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">
-                ${directorApproved == false}
-            </bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${directorApproved == 0}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">

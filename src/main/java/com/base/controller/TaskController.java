@@ -3,6 +3,7 @@ package com.base.controller;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -61,25 +62,68 @@ public class TaskController {
         return "CLAIMED";
     }
 
-    @PostMapping("/{taskId}/complete")
-    public String completeTask(@PathVariable String taskId,
-                               @RequestBody(required = false) Map<String, Object> body) {
+    @PostMapping("/complete")
+    public ResponseEntity<?> completeTask(
+            @RequestBody Map<String, Object> body) {
 
-        Task task = taskService.createTaskQuery()
-                .taskId(taskId)
-                .singleResult();
+        try {
 
-        if (task == null) {
-            throw new RuntimeException("Task not found or already completed: " + taskId);
+            if (body == null ||
+                body.get("processInstanceId") == null) {
+
+                return ResponseEntity.badRequest()
+                        .body("processInstanceId is required");
+            }
+
+            String processInstanceId =
+                    body.get("processInstanceId")
+                            .toString();
+
+            Task task = taskService.createTaskQuery()
+                    .processInstanceId(processInstanceId)
+                    .singleResult();
+
+            if (task == null) {
+
+                return ResponseEntity.badRequest()
+                        .body(
+                                "Task not found or already completed"
+                        );
+            }
+
+            // remove technical field
+            body.remove("processInstanceId");
+
+            Map<String, Object> variables =
+                    new HashMap<>(body);
+
+            taskService.complete(
+                    task.getId(),
+                    variables
+            );
+
+            Map<String, Object> response =
+                    new HashMap<>();
+
+            response.put("success", true);
+            response.put("message", "TASK_COMPLETED");
+            response.put("taskId", task.getId());
+            response.put("processInstanceId",
+                    processInstanceId);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+
+            Map<String, Object> error =
+                    new HashMap<>();
+
+            error.put("success", false);
+            error.put("message", e.getMessage());
+
+            return ResponseEntity.badRequest()
+                    .body(error);
         }
-
-        Map<String, Object> variables = (body != null)
-                ? new HashMap<>(body)
-                : new HashMap<>();
-
-        taskService.complete(taskId, variables);
-
-        return "TASK COMPLETED";
     }
     // =========================================
     // STEP 6 - REJECT TASK
@@ -95,21 +139,4 @@ public class TaskController {
         return "TASK REJECTED";
     }
 
-    @PostMapping("/{taskId}/completeafter")
-    public String completeTask(@PathVariable String taskId) {
-
-        Task task = taskService.createTaskQuery()
-                .taskId(taskId)
-                .singleResult();
-
-        if (task == null) {
-            return "TASK NOT FOUND";
-        }
-
-        System.out.println("TASK NAME = " + task.getName());
-
-        taskService.complete(taskId);
-
-        return "TASK COMPLETED";
-    }
 }
