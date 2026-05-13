@@ -6,8 +6,8 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.base</groupId>
-	<artifactId>bpmnserver</artifactId>
-	<version>1.0.0</version>
+	<artifactId>socketserver</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>

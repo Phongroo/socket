@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: socketserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: socketserver
+  template:
+    metadata:
+      labels:
+        app: socketserver
+    spec:
+      containers:
+        - name: socketserver
+          image: socketserver:1.0
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - containerPort: 8090
+
+          env:
+            - name: SERVER_PORT
+              value: "8090"
+
+            - name: SPRING_APPLICATION_NAME
+              value: socketserver
+
+            - name: SPRING_WEBSOCKET_PATH
+              value: /ws
