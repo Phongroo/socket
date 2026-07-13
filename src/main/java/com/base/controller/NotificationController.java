@@ -22,7 +22,7 @@ public class NotificationController {
             @RequestBody Map<String, Object> req) {
 
         String username =
-                req.get("userName").toString();
+                req.get("taskName").toString();
 
         notificationService.sendAssign(
                 username,
